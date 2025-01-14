@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="format-detection" content="telephone=no" />
+
+<link rel="stylesheet" href="app.css" type="text/css">
+<link rel="stylesheet" href="lib/fsm.css" type="text/css">
+<link rel="stylesheet" href="lib/fsm_animation.css" type="text/css">
+
+<title>デザイン設計</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.19/dist/katex.css" integrity="sha384-SnvKCVpWlqAHp0BAPjxL1N8sfsapoYgnRfI5QefCb2uZ92hj01Q9rnHeiMsGJ+mT" crossorigin="anonymous">
+
+</head>
+<body>
+<div class='fsm_container' id='fms_container'>
+</body>
+
+<script>
+
+let   PagePtr = 0;
+const PageList = ['loading', 'ready', 'work', 'result'];
+/*
+function _changeState(){
+    if(FSM != undefined){
+    console.log('_changeState();', PagePtr);
+    PagePtr = (PagePtr + 1)%PageList.length;
+    FSM.setTransState(PageList[PagePtr]);
+    }
+}
+*/
+const LIB_LOADED_TABLE = { 
+    'app': 'none',
+    'katex': 'none',
+    'fsm': 'none',
+    'wde': 'none',
+    'model': 'none',
+    'gas': 'none',
+    'opencv': 'none',
+    'tf': 'none',
+    'simple_pen': 'none',
+};
+
+function onLoaded(flag){
+    console.log('onLoaded():', flag);
+    if(flag === "app"){
+        LIB_LOADED_TABLE['app'] = 'loaded';
+    }else if(flag === "fsm"){
+        LIB_LOADED_TABLE['fsm'] = 'loaded';
+    }else if(flag === "gas"){
+        LIB_LOADED_TABLE['gas'] = 'loaded';
+    }else if(flag === "wde"){
+        LIB_LOADED_TABLE['wde'] = 'loaded';
+    }else if(flag === "tf"){
+        LIB_LOADED_TABLE['tf'] = 'loaded';
+    }else if(flag === "model"){
+        LIB_LOADED_TABLE['model'] = 'loaded';
+    }else if(flag === "katex"){
+        LIB_LOADED_TABLE['katex'] = 'loaded';
+    }else if(flag === "opencv"){
+        LIB_LOADED_TABLE['opencv'] = 'loaded';
+    }else if(flag === "simple_pen"){
+        LIB_LOADED_TABLE['simple_pen'] = 'loaded';
+    }
+    if((LIB_LOADED_TABLE['app'] === 'run')&&
+       (LIB_LOADED_TABLE['simple_pen'] === 'loaded')){
+        runSimplePen();
+        LIB_LOADED_TABLE['simple_pen'] = 'run';
+    }
+    if((LIB_LOADED_TABLE['app'] === 'run')&&
+       (LIB_LOADED_TABLE['simple_pen'] === 'run')&&
+       (LIB_LOADED_TABLE['opencv'] === 'loaded')){
+        runOpenCV();
+        LIB_LOADED_TABLE['opencv'] = 'run';
+    }
+    if((LIB_LOADED_TABLE['app'] === 'loaded')&&
+       (LIB_LOADED_TABLE['fsm'] === 'loaded')){
+        const q = getUrlQueries();
+        app_main();
+        load_json(q['d']);
+        LIB_LOADED_TABLE['app'] = 'run';
+    }
+    console.log('loaded table:',LIB_LOADED_TABLE);
+    let loaded_flag = true;
+    Object.keys(LIB_LOADED_TABLE).map(function(key){
+        console.log('loaded',key, LIB_LOADED_TABLE[key]);
+        if(key !== 'app' && LIB_LOADED_TABLE[key] === 'none'){
+            loaded_flag = false;
+        }else if(LIB_LOADED_TABLE['app'] !== 'run'){
+            loaded_flag = false;
+        }else if(LIB_LOADED_TABLE['simple_pen'] !== 'run'){
+            loaded_flag = false;
+        }else if(LIB_LOADED_TABLE['opencv'] !== 'run'){
+            loaded_flag = false;
+        }
+    });
+    if(loaded_flag == true){
+        execPrepare();
+        FSM.setTransState('ready');
+    }
+}
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/katex@0.16.19/dist/katex.js" integrity="sha384-nh31Q9trd3sQf+3sGN3WJvMdc9e2ZDTxwyReB2CsXJLidX/WnJRpy0c7pPdE8hYE" crossorigin="anonymous" onload="(function(){ onLoaded('katex');})();"></script>
+<script async src="./app.js?x" onload="(function(){ onLoaded('app'); })();" type="text/javascript"></script>
+<script async src="./lib/fsm.js" onload="(function(){ onLoaded('fsm'); })();" type="text/javascript"></script>
+<script async src="./lib/simple_pen.js?x" onload="(function(){ onLoaded('simple_pen'); })();" type="text/javascript"></script>
+
+<script async src="./lib/written_digit_estimator.js?sx" onload="(function(){ onLoaded('wde');})();" type="text/javascript"></script>
+<script async src="./lib/opencv_core.js" onload="(function(){ onLoaded('opencv');})();" type="text/javascript"></script>
+<script async src="./lib/predictive_model.js" onload="(function(){ onLoaded('model');})();" type="text/javascript"></script>
+<script async src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0" onload="(function(){ onLoaded('tf');})();" type="text/javascript"></script>
+
+</html>
