@@ -1,0 +1,1 @@
+body{font-family:sans-serif;padding:2em;max-width:600px;margin:auto}.choice{border:1px solid #ccc;padding:1em;margin:.5em 0;cursor:pointer;transition:background .3s}.choice.correct{background:#90ee90}.choice.incorrect{background:salmon}button{margin-top:1em}ul{list-style:none;padding:0}
